@@ -148,7 +148,7 @@ tnoremap <C-j> <C-\><C-N><C-w>j
 tnoremap <C-k> <C-\><C-N><C-w>k
 tnoremap <C-l> <C-\><C-N><C-w>l
 
-" start terminal in inert mode
+" start terminal in insert mode
 autocmd TermOpen * startinsert
 
 " enable wrap in terminal
