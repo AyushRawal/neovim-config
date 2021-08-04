@@ -79,6 +79,7 @@ call plug#begin("/home/rawal/.config/nvim/plugged")
 	Plug 'p00f/nvim-ts-rainbow'
 	Plug 'easymotion/vim-easymotion'
 	Plug 'hoob3rt/lualine.nvim'
+	Plug 'lukas-reineke/indent-blankline.nvim'
 	Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
 call plug#end()
 
@@ -162,6 +163,10 @@ nnoremap <silent> <leader>x :BufferClose<CR>
 let bufferline = get(g:, 'bufferline', {})
 let bufferline.icon_close_tab = '×'
 
+" indent line config
+let g:indent_blankline_show_first_indent_level = v:false
+let g:indent_blankline_space_char = '.'
+
 " -----------------------
 " Nvim Tree config
 let g:nvim_tree_auto_close = 1
@@ -169,6 +174,7 @@ let g:nvim_tree_auto_open = 1
 let g:nvim_tree_lsp_diagnostics = 1
 let g:nvim_tree_add_trailing = 1
 let g:nvim_tree_follow = 1
+let g:nvim_tree_indent_markers = 1
 let g:nvim_tree_window_picker_exclude = {
     \   'filetype': [
     \     'packer',
