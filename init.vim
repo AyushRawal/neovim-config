@@ -228,6 +228,3 @@ if (has("termguicolors"))
 endif
 colorscheme tokyonight
 
-" auto format cpp files on save
-autocmd BufWritePre *.cpp lua vim.lsp.buf.formatting_sync(nil, 100)
-
