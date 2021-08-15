@@ -37,9 +37,14 @@ end
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities.textDocument.completion.completionItem.snippetSupport = true
 
-nvim_lsp.clangd.setup{on_attach = on_attach ,capabilities = capabilities, cmd = {data_path .. "/lspinstall/cpp/clangd/bin/clangd", "--background-index", "--fallback-style=Microsoft"}}
+nvim_lsp.clangd.setup{on_attach = on_attach, capabilities = capabilities, cmd = {data_path .. "/lspinstall/cpp/clangd/bin/clangd", "--background-index", "--fallback-style=Microsoft"}}
 
 nvim_lsp.pyright.setup{on_attach = on_attach, capabilities = capabilities, cmd = {data_path .. "/lspinstall/python/node_modules/.bin/pyright-langserver", "--stdio"}, settings = { python = { analysis = { typeCheckingMode = 'off' } } }}
+
+nvim_lsp.html.setup{on_attach = on_attach, capabilities = capabilities, cmd = {"node", data_path .. "/lspinstall/html/vscode-html/html-language-features/server/dist/node/htmlServerMain.js", "--stdio" }}
+nvim_lsp.cssls.setup{on_attach = on_attach, capabilities = capabilities, cmd = {"node", data_path .. "/lspinstall/html/vscode-css/css-language-features/server/dist/node/cssServerMain.js", "--stdio" }}
+nvim_lsp.jsonls.setup{on_attach = on_attach, capabilities = capabilities, cmd = {"node", data_path .. "/lspinstall/html/vscode-json/json-language-features/server/dist/node/jsonServerMain.js", "--stdio" }}
+nvim_lsp.tsserver.setup{on_attach = on_attach, capabilities = capabilities, cmd = {data_path .. "/lspinstall/typescript/node_modules/.bin/typescript-language-server"}}
 -- Use a loop to conveniently call 'setup' on multiple servers and
 -- map buffer local keybindings when the language server attaches
 -- local servers = {"clangd"}
