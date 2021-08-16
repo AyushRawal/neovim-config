@@ -12,6 +12,7 @@ set smartindent
 set smarttab
 set tabstop=4
 set shiftwidth=4
+set expandtab
 set wrap
 set hlsearch
 set cursorline
@@ -61,10 +62,12 @@ vnoremap <silent> <A-j> :m '>+1<CR>gv=gv
 vnoremap < <gv
 vnoremap > >gv
 
+let g:AutoPairsMapCh = 0
+
 " PLugins
 call plug#begin("/home/rawal/.config/nvim/plugged")
 	Plug 'preservim/nerdcommenter'
-	Plug 'jiangmiao/auto-pairs'
+    Plug 'jiangmiao/auto-pairs'
 	Plug 'kyazdani42/nvim-web-devicons'
 	Plug 'kyazdani42/nvim-tree.lua'
 	Plug 'neovim/nvim-lspconfig'
