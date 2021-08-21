@@ -62,8 +62,6 @@ vnoremap <silent> <A-j> :m '>+1<CR>gv=gv
 vnoremap < <gv
 vnoremap > >gv
 
-let g:AutoPairsMapCh = 0
-
 " PLugins
 call plug#begin("/home/rawal/.config/nvim/plugged")
 	Plug 'preservim/nerdcommenter'
@@ -87,12 +85,20 @@ call plug#begin("/home/rawal/.config/nvim/plugged")
 call plug#end()
 
 runtime resize.vim
+runtime fzf.vim
 
 " resize splits
 nnoremap <silent> <A-H> :CmdResizeLeft<cr>
 nnoremap <silent> <A-J> :CmdResizeDown<cr>
 nnoremap <silent> <A-K> :CmdResizeUp<cr>
 nnoremap <silent> <A-L> :CmdResizeRight<cr>
+
+" fzf config
+let g:fzf_action = {
+  \ 'ctrl-s': 'split',
+  \ 'ctrl-v': 'vsplit' }
+let g:fzf_layout = { 'window': { 'width': 0.8, 'height': 0.55 } }
+nnoremap <leader>a :call fzf#run(fzf#wrap({'source': 'fd -H -E .git -t f .', 'options': '--preview bat\ --color=always\ --line-range=:25\ --style="numbers,grid"\ {}'}))<CR>
 
 lua << EOF
 require("lsp-config")
@@ -126,6 +132,9 @@ require('lualine').setup {
 }
 EOF
 
+" auto pairs
+let g:AutoPairsMapCh = 0
+
 " compe mappings
 " inoremap <silent><expr> <C-Space> compe#complete()
 inoremap <silent><expr> <CR>      compe#confirm('<CR>')
@@ -135,12 +144,8 @@ inoremap <silent><expr> <C-e>     compe#close('<C-e>')
 
 " ----------------------
 " terminal config
-function! OpenTerminal()
-	split +term
-	resize 20
-endfunction
 
-nnoremap <leader>t :call OpenTerminal()<CR>
+nnoremap <leader>t :term<CR>
 
 " escape terminal mode
 tnoremap <Esc> <C-\><C-n>
@@ -161,6 +166,7 @@ au TermOpen * setlocal wrap
 nnoremap <silent> <A-b> :BufferNext<CR>
 nnoremap <silent> <A-B> :BufferPrevious<CR>
 nnoremap <silent> <leader>x :BufferClose<CR>
+nnoremap <silent> <leader>b :BufferPick<CR>
 
 let bufferline = get(g:, 'bufferline', {})
 let bufferline.icon_close_tab = '×'
@@ -188,7 +194,7 @@ let g:nvim_tree_window_picker_exclude = {
     \ }
 
 let g:nvim_tree_disable_default_keybindings = 1
-nnoremap <silent><leader>b :NvimTreeToggle<CR>
+nnoremap <silent><leader>n :NvimTreeToggle<CR>
 
 lua << EOF
 local tree_cb = require'nvim-tree.config'.nvim_tree_callback
