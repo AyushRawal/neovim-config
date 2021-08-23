@@ -12,4 +12,4 @@ function! Format()
 	call winrestview(view)
 endfunction
 
-nnoremap <buffer> <leader>f :call Format()<CR>
+command! -buffer Fmt call Format()
