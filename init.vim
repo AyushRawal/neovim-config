@@ -48,6 +48,7 @@ Plug 'junegunn/fzf.vim'
 Plug 'hoob3rt/lualine.nvim'
 Plug 'lukas-reineke/indent-blankline.nvim'
 Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
+Plug 'sainnhe/gruvbox-material'
 call plug#end()
 
 runtime resize.vim
@@ -68,6 +69,9 @@ nnoremap K 10k
 
 " join lines
 nnoremap M mzJ`z
+
+" toggle relative numbers
+nnoremap <silent><F12> :set rnu!<CR>
 
 " move among splits
 inoremap <C-h> <C-\><C-N><C-w>h 
@@ -176,7 +180,7 @@ require("nvim-treesitter.configs").setup {
 require('nvim-web-devicons').setup {
 	override = {
 		zsh = {
-		icon = "",
+		icon = "",
 		color = "#428850",
 		name = "Zsh"
 		}
@@ -184,8 +188,39 @@ require('nvim-web-devicons').setup {
  	default = true;
 }
 require('lualine').setup {
-	options = {theme = 'tokyonight'},
-	extensions = {'quickfix', 'nvim-tree' }
+	options = {
+        -- theme = 'tokyonight',
+        theme = 'gruvbox_material',
+        section_separators = {'', ''},
+        component_separators = {'', ''}
+    },
+	extensions = {'quickfix', 'nvim-tree', 'fzf' },
+    sections = {
+        lualine_b = {
+            {
+                'branch',
+                separator = '  ',
+            },
+            {
+                'diff',
+                color_added = '#6ABD6A',
+                color_modified = '#BA8868',
+                color_removed = '#FA7686'
+            }
+        },
+        lualine_x = {
+            {
+                "diagnostics",
+                sources = {'nvim_lsp'},
+                symbols = {error = '  ', warn = ' 𥉉 ', info = '  ', hint = '  '},
+                color_error = '#DF6262',
+                color_warn = '#AABA20',
+                color_info = '#DDAAAA',
+                color_hint = '#5ABA34'
+            },
+            'filetype',
+        }
+    }
 }
 require('hop').setup()
 EOF
@@ -223,7 +258,7 @@ nnoremap <silent> <leader>b :BufferPick<CR>
 
 " barbar config
 let bufferline = get(g:, 'bufferline', {})
-let bufferline.icon_close_tab = '×'
+let bufferline.icon_close_tab = ''
 
 " indent line config
 let g:indent_blankline_show_first_indent_level = v:false
@@ -232,6 +267,7 @@ let g:indent_blankline_space_char = '.'
 " Nvim Tree config
 let g:nvim_tree_auto_close = 1
 let g:nvim_tree_auto_open = 1
+let g:nvim_tree_quit_on_open = 1
 let g:nvim_tree_lsp_diagnostics = 1
 let g:nvim_tree_add_trailing = 1
 let g:nvim_tree_follow = 1
@@ -278,11 +314,19 @@ let g:NERDCreateDefaultMappings = 0
 map <leader>/ <plug>NERDCommenterToggle
 
 " colorscheme
-let g:tokyonight_sidebars = [ "qf", "vista_kind", "terminal", "vim-plug", "NvimTree" ]
-let g:tokyonight_italic_keywords = 0
-
 if (has("termguicolors"))
-	set termguicolors
+    set termguicolors
 endif
-colorscheme tokyonight
+
+" let g:tokyonight_sidebars = [ "qf", "vista_kind", "terminal", "vim-plug", "NvimTree" ]
+" let g:tokyonight_italic_keywords = 0 
+let g:gruvbox_material_background = 'medium'
+let g:gruvbox_material_enable_bold = 1
+" let g:gruvbox_material_enable_italic = 1
+" let g:gruvbox_material_diagnostic_text_highlight = 1
+let g:gruvbox_material_diagnostic_virtual_text = 'colored'
+let g:gruvbox_material_better_performance = 1
+
+" colorscheme tokyonight
+colorscheme gruvbox-material
 
