@@ -27,9 +27,14 @@ filetype plugin indent on
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 set grepprg=rg\ --vimgrep\ --smart-case\ --follow
 
+if (has("termguicolors"))
+    set termguicolors
+endif
+
 " PLugins
 call plug#begin("/home/rawal/.config/nvim/plugged")
-Plug 'preservim/nerdcommenter'
+Plug 'terrortylor/nvim-comment', {'branch' : 'main'}
+Plug 'JoosepAlviste/nvim-ts-context-commentstring'
 Plug 'jiangmiao/auto-pairs'
 Plug 'kyazdani42/nvim-web-devicons'
 Plug 'kyazdani42/nvim-tree.lua'
@@ -41,7 +46,7 @@ Plug 'rafamadriz/friendly-snippets', {'branch' : 'main'}
 Plug 'kabouzeid/nvim-lspinstall', {'branch' : 'main'}
 Plug 'tpope/vim-surround'
 Plug 'romgrk/barbar.nvim'
-Plug 'ap/vim-css-color'
+Plug 'norcalli/nvim-colorizer.lua'
 Plug 'p00f/nvim-ts-rainbow'
 Plug 'phaazon/hop.nvim'
 Plug 'junegunn/fzf.vim'
@@ -110,18 +115,22 @@ nnoremap Y y$
 nnoremap <leader>y :%y<CR>
 
 " cycle quickfix list
-nnoremap <A-}> :cnext<CR>
-nnoremap <A-{> :cprev<CR>
+nnoremap <A-.> :cnext<CR>
+nnoremap <A-,> :cprev<CR>
 
 " make life easier 
 nnoremap 0 ^
 nnoremap ^ 0
 
-"save me
+" save me
 command! W :w
 command! Wq :wq
 command! Q :q
 command! -bang Q :q<bang>
+
+" edit nvim config on the go
+nnoremap <leader>rc :e /home/rawal/.config/nvim/init.vim<CR>
+nnoremap <leader><CR> :source /home/rawal/.config/nvim/init.vim<CR>
 
 " clear highlights 
 nnoremap <leader>l :noh<CR>
@@ -154,9 +163,9 @@ let g:fzf_colors = {
 let $FZF_DEFAULT_COMMAND = 'rg --hidden --files --follow -g "!\.git/"'
 nnoremap <leader>f :Files<CR>
 " Get text in files with Rg
-command! -bang -nargs=* Rg call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1, {'options': '--delimiter : --nth 4..'}, <bang>0)
+command! -bang -nargs=* Rg call fzf#vim#grep('rg --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1, {'options': '--delimiter : --nth 4..'}, <bang>0)
 nnoremap <leader>F :Rg<CR>
-nnoremap <C-f> :Blines<Cr>
+nnoremap <C-f> :BLines<Cr>
 nnoremap <leader>h :History<CR>
 nnoremap <leader>gc :Commits<CR>
 nnoremap <leader>gs :GFiles?<CR>
@@ -175,7 +184,11 @@ require("nvim-treesitter.configs").setup {
             "#deaefd",
             "#a4a4fd",
 		}
-    }
+    },
+    context_commentstring = {
+        enable = true,
+        enable_autocmd = false,
+    },
 }
 require('nvim-web-devicons').setup {
 	override = {
@@ -196,6 +209,7 @@ require('lualine').setup {
     },
 	extensions = {'quickfix', 'nvim-tree', 'fzf' },
     sections = {
+        lualine_a = {'mode'},
         lualine_b = {
             {
                 'branch',
@@ -208,6 +222,7 @@ require('lualine').setup {
                 color_removed = '#FA7686'
             }
         },
+        lualine_c = {'filename'},
         lualine_x = {
             {
                 "diagnostics",
@@ -219,11 +234,43 @@ require('lualine').setup {
                 color_hint = '#5ABA34'
             },
             'filetype',
-        }
-    }
+        },
+        lualine_y = {'progress'},
+        lualine_z = {'location'}
+    },
+    inactive_sections = {
+        lualine_a = {},
+        lualine_b = {},
+        lualine_c = {'filename'},
+        lualine_x = {'location'},
+        lualine_y = {},
+        lualine_z = {}
+    },
 }
 require('hop').setup()
+require('colorizer').setup (
+    {
+        'css',
+        'html',
+        'javascript',
+        'vim'
+    },
+    {
+        RRGGBBAA = true;
+        css      = true;
+    }
+)
+require('nvim_comment').setup {
+    create_mappings = false,
+    hook = function()
+        require("ts_context_commentstring.internal").update_commentstring()
+    end,
+}
 EOF
+
+" nvim-comment bindings
+nnoremap <leader>/ :CommentToggle<CR>
+vnoremap <leader>/ :CommentToggle<CR>
 
 " hop keybindings
 nnoremap <leader><leader>w :HopWord<CR>
@@ -231,13 +278,14 @@ nnoremap <leader><leader>j :HopLine<CR>
 nnoremap <leader><leader>f :HopChar1<CR>
 nnoremap <leader><leader>t :HopChar2<CR>
 
-" auto pairs <C-h> binding disable
+" auto pairs 
 let g:AutoPairsMapCh = 0
+let g:AutoPairsFlyMode = 1
 
 " compe mappings
-" inoremap <silent><expr> <C-e>         compe#complete()
+inoremap <silent><expr> <C-e>         compe#complete()
 inoremap <silent><expr> <CR>          compe#confirm('<CR>')
-inoremap <silent><expr> <C-Space>     compe#close('<C-Space')
+inoremap <silent><expr> <C-Space>     compe#close('<C-Space>')
 " inoremap <silent><expr> <C-f>         compe#scroll({ 'delta': +4 })
 " inoremap <silent><expr> <C-d>         compe#scroll({ 'delta': -4 })
 
@@ -308,16 +356,7 @@ vim.g.nvim_tree_bindings = {
 }
 EOF
 
-" NerdCommenter Config
-let g:NERDSpaceDelims = 1
-let g:NERDCreateDefaultMappings = 0
-map <leader>/ <plug>NERDCommenterToggle
-
 " colorscheme
-if (has("termguicolors"))
-    set termguicolors
-endif
-
 " let g:tokyonight_sidebars = [ "qf", "vista_kind", "terminal", "vim-plug", "NvimTree" ]
 " let g:tokyonight_italic_keywords = 0 
 let g:gruvbox_material_background = 'medium'
