@@ -43,7 +43,6 @@ Plug 'hrsh7th/vim-vsnip'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'} 
 Plug 'hrsh7th/nvim-compe'
 Plug 'rafamadriz/friendly-snippets', {'branch' : 'main'}
-Plug 'kabouzeid/nvim-lspinstall', {'branch' : 'main'}
 Plug 'tpope/vim-surround'
 Plug 'romgrk/barbar.nvim'
 Plug 'norcalli/nvim-colorizer.lua'
@@ -62,6 +61,7 @@ runtime fzf.vim
 lua << EOF
 require("lsp-config")
 require("compe-config")
+require("statusline")
 EOF
 
 let mapleader= ";"
@@ -171,101 +171,55 @@ nnoremap <leader>gc :Commits<CR>
 nnoremap <leader>gs :GFiles?<CR>
 
 lua << EOF
-require("nvim-treesitter.configs").setup {
-    highlight = {enable = true},
-	rainbow = {
-		enable = true,
-		extended_mode = true,
-		max_file_lines = 1000,
-		colors = {
-            "#4aa4d1",
-            "#8f62e5",
-            "#ad64df",
-            "#deaefd",
-            "#a4a4fd",
-		}
+require("nvim-treesitter.configs").setup({
+  highlight = { enable = true },
+  rainbow = {
+    enable = true,
+    extended_mode = true,
+    max_file_lines = 1000,
+    colors = {
+      "#4aa4d1",
+      "#8f62e5",
+      "#ad64df",
+      "#deaefd",
+      "#a4a4fd",
     },
-    context_commentstring = {
-        enable = true,
-        enable_autocmd = false,
+  },
+  context_commentstring = {
+    enable = true,
+    enable_autocmd = false,
+    config = {
+      cpp = "// %s",
+      c = "// %s",
     },
-}
-require('nvim-web-devicons').setup {
-	override = {
-		zsh = {
-		icon = "",
-		color = "#428850",
-		name = "Zsh"
-		}
-	};
- 	default = true;
-}
-require('lualine').setup {
-	options = {
-        -- theme = 'tokyonight',
-        theme = 'gruvbox_material',
-        section_separators = {'', ''},
-        component_separators = {'', ''}
+  },
+})
+require("nvim-web-devicons").setup({
+  override = {
+    zsh = {
+      icon = "",
+      color = "#428850",
+      name = "Zsh",
     },
-	extensions = {'quickfix', 'nvim-tree', 'fzf' },
-    sections = {
-        lualine_a = {'mode'},
-        lualine_b = {
-            {
-                'branch',
-                separator = '  ',
-            },
-            {
-                'diff',
-                color_added = '#6ABD6A',
-                color_modified = '#BA8868',
-                color_removed = '#FA7686'
-            }
-        },
-        lualine_c = {'filename'},
-        lualine_x = {
-            {
-                "diagnostics",
-                sources = {'nvim_lsp'},
-                symbols = {error = '  ', warn = ' 𥉉 ', info = '  ', hint = '  '},
-                color_error = '#DF6262',
-                color_warn = '#AABA20',
-                color_info = '#DDAAAA',
-                color_hint = '#5ABA34'
-            },
-            'filetype',
-        },
-        lualine_y = {'progress'},
-        lualine_z = {'location'}
-    },
-    inactive_sections = {
-        lualine_a = {},
-        lualine_b = {},
-        lualine_c = {'filename'},
-        lualine_x = {'location'},
-        lualine_y = {},
-        lualine_z = {}
-    },
-}
-require('hop').setup()
-require('colorizer').setup (
-    {
-        'css',
-        'html',
-        'javascript',
-        'vim'
-    },
-    {
-        RRGGBBAA = true;
-        css      = true;
-    }
-)
-require('nvim_comment').setup {
-    create_mappings = false,
-    hook = function()
-        require("ts_context_commentstring.internal").update_commentstring()
-    end,
-}
+  },
+  default = true,
+})
+require("hop").setup()
+require("colorizer").setup({
+  "css",
+  "html",
+  "javascript",
+  "vim",
+}, {
+  RRGGBBAA = true,
+  css = true,
+})
+require("nvim_comment").setup({
+  create_mappings = false,
+  hook = function()
+    require("ts_context_commentstring.internal").update_commentstring()
+  end,
+})
 EOF
 
 " nvim-comment bindings
@@ -310,7 +264,7 @@ let bufferline.icon_close_tab = ''
 
 " indent line config
 let g:indent_blankline_show_first_indent_level = v:false
-let g:indent_blankline_space_char = '.'
+let g:indent_blankline_space_char = '·'
 
 " Nvim Tree config
 let g:nvim_tree_auto_close = 1
