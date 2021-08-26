@@ -11,6 +11,7 @@ set incsearch
 set hlsearch
 set ruler
 set cursorline
+set signcolumn=yes
 set nowrap
 set autoindent
 set smartindent
@@ -31,9 +32,12 @@ if (has("termguicolors"))
     set termguicolors
 endif
 
+let mapleader= ";"
+
 " PLugins
 call plug#begin("/home/rawal/.config/nvim/plugged")
 Plug 'terrortylor/nvim-comment', {'branch' : 'main'}
+Plug 'breuckelen/vim-resize'
 Plug 'JoosepAlviste/nvim-ts-context-commentstring'
 Plug 'jiangmiao/auto-pairs'
 Plug 'kyazdani42/nvim-web-devicons'
@@ -49,22 +53,25 @@ Plug 'norcalli/nvim-colorizer.lua'
 Plug 'p00f/nvim-ts-rainbow'
 Plug 'phaazon/hop.nvim'
 Plug 'junegunn/fzf.vim'
+Plug 'junegunn/fzf', {'do': { -> fzf#install() }}
 Plug 'hoob3rt/lualine.nvim'
 Plug 'lukas-reineke/indent-blankline.nvim'
 Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
 Plug 'sainnhe/gruvbox-material'
 call plug#end()
 
-runtime resize.vim
-runtime fzf.vim
-
 lua << EOF
-require("lsp-config")
+require("autopairs")
+require("bufferline")
 require("compe-config")
+require("hop-config")
+require("lsp-config")
+require("nvimcomment")
+require("nvimtreesitter")
+require("nvimtree")
+require("others")
 require("statusline")
 EOF
-
-let mapleader= ";"
 
 " fast movement
 nnoremap <S-up> 10k
@@ -170,145 +177,16 @@ nnoremap <leader>h :History<CR>
 nnoremap <leader>gc :Commits<CR>
 nnoremap <leader>gs :GFiles?<CR>
 
-lua << EOF
-require("nvim-treesitter.configs").setup({
-  highlight = { enable = true },
-  rainbow = {
-    enable = true,
-    extended_mode = true,
-    max_file_lines = 1000,
-  --   colors = {
-  --     "#4aa4d1",
-  --     "#8f62e5",
-  --     "#ad64df",
-  --     "#deaefd",
-  --     "#a4a4fd",
-  --   },
-  },
-  context_commentstring = {
-    enable = true,
-    enable_autocmd = false,
-    config = {
-      cpp = "// %s",
-      c = "// %s",
-    },
-  },
-})
-require("nvim-web-devicons").setup({
-  override = {
-    zsh = {
-      icon = "",
-      color = "#428850",
-      name = "Zsh",
-    },
-  },
-  default = true,
-})
-require("hop").setup()
-require("colorizer").setup({
-  "css",
-  "html",
-  "javascript",
-  "vim",
-}, {
-  RRGGBBAA = true,
-  css = true,
-})
-require("nvim_comment").setup({
-  create_mappings = false,
-  hook = function()
-    require("ts_context_commentstring.internal").update_commentstring()
-  end,
-})
-EOF
-
-" nvim-comment bindings
-nnoremap <leader>/ :CommentToggle<CR>
-vnoremap <leader>/ :CommentToggle<CR>
-
-" hop keybindings
-nnoremap <leader><leader>w :HopWord<CR>
-nnoremap <leader><leader>j :HopLine<CR>
-nnoremap <leader><leader>f :HopChar1<CR>
-nnoremap <leader><leader>t :HopChar2<CR>
-
-" auto pairs 
-let g:AutoPairsMapCh = 0
-let g:AutoPairsFlyMode = 1
-
-" compe mappings
-inoremap <silent><expr> <C-e>         compe#complete()
-inoremap <silent><expr> <CR>          compe#confirm('<CR>')
-inoremap <silent><expr> <C-Space>     compe#close('<C-Space>')
-" inoremap <silent><expr> <C-f>         compe#scroll({ 'delta': +4 })
-" inoremap <silent><expr> <C-d>         compe#scroll({ 'delta': -4 })
-
 " terminal config
-nnoremap <leader>t :term<CR>
+nnoremap <leader>tt :term<CR>
+nnoremap <leader>tv :60vsplit +term<CR>
+nnoremap <leader>ts :20split +term<CR>
 " escape terminal mode
 tnoremap <Esc> <C-\><C-n>
 " start terminal in insert mode
 autocmd TermOpen * startinsert
 " enable wrap in terminal
-au TermOpen * setlocal wrap 
-
-" cycle through buffes
-nnoremap <silent> <A-b> :BufferNext<CR>
-nnoremap <silent> <A-B> :BufferPrevious<CR>
-nnoremap <silent> <leader>x :BufferClose<CR>
-nnoremap <silent> <leader>b :BufferPick<CR>
-
-" barbar config
-let bufferline = get(g:, 'bufferline', {})
-let bufferline.icon_close_tab = ''
-
-" indent line config
-let g:indent_blankline_show_first_indent_level = v:false
-let g:indent_blankline_space_char = '·'
-
-" Nvim Tree config
-let g:nvim_tree_auto_close = 1
-let g:nvim_tree_auto_open = 1
-let g:nvim_tree_quit_on_open = 1
-let g:nvim_tree_lsp_diagnostics = 1
-let g:nvim_tree_add_trailing = 1
-let g:nvim_tree_follow = 1
-let g:nvim_tree_indent_markers = 1
-let g:nvim_tree_window_picker_exclude = {
-    \   'filetype': [
-    \     'packer',
-    \     'qf'
-    \   ],
-    \   'buftype': [
-    \     'terminal'
-    \   ]
-    \ }
-let g:nvim_tree_disable_default_keybindings = 1
-nnoremap <silent><leader>n :NvimTreeToggle<CR>
-
-lua << EOF
-local tree_cb = require'nvim-tree.config'.nvim_tree_callback
-vim.g.nvim_tree_bindings = {
-    { key = {"<CR>", "o", "<2-LeftMouse>"}, cb = tree_cb("edit") },
-    { key = "v",                            cb = tree_cb("vsplit") },
-    { key = "s",                            cb = tree_cb("split") },
-    { key = "t",                            cb = tree_cb("tabnew") },
-    { key = "R",                            cb = tree_cb("refresh") },
-    { key = "a",                            cb = tree_cb("create") },
-    { key = "d",                            cb = tree_cb("remove") },
-    { key = "r",                            cb = tree_cb("rename") },
-    { key = "z",                            cb = tree_cb("full_rename") },
-    { key = "x",                            cb = tree_cb("cut") },
-    { key = "c",                            cb = tree_cb("copy") },
-    { key = "p",                            cb = tree_cb("paste") },
-    { key = "y",                            cb = tree_cb("copy_name") },
-    { key = "Y",                            cb = tree_cb("copy_path") },
-    { key = "gy",                           cb = tree_cb("copy_absolute_path") },
-    { key = "-",                            cb = tree_cb("dir_up") },
-    { key = "q",                            cb = tree_cb("close") },
-    { key = "g?",                           cb = tree_cb("toggle_help") },
-}
-EOF
+autocmd TermOpen * setlocal wrap 
 
 " colorscheme
 " let g:tokyonight_sidebars = [ "qf", "vista_kind", "terminal", "vim-plug", "NvimTree" ]

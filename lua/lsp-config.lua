@@ -66,7 +66,7 @@ nvim_lsp.html.setup({
   capabilities = capabilities,
   cmd = {
     "node",
-    data_path .. "/lspinstall/vscode/html/server/dist/node/htmlServerMain.js",
+    data_path .. "/lspinstall/vscode-html/html-language-features/server/dist/node/htmlServerMain.js",
     "--stdio",
   },
 })
@@ -75,7 +75,7 @@ nvim_lsp.cssls.setup({
   capabilities = capabilities,
   cmd = {
     "node",
-    data_path .. "/lspinstall/vscode/css/server/dist/node/cssServerMain.js",
+    data_path .. "/lspinstall/vscode-css/css-language-features/server/dist/node/cssServerMain.js",
     "--stdio",
   },
 })
@@ -84,7 +84,7 @@ nvim_lsp.jsonls.setup({
   capabilities = capabilities,
   cmd = {
     "node",
-    data_path .. "/lspinstall/vscode/json/server/dist/node/jsonServerMain.js",
+    data_path .. "/lspinstall/vscode-json/json-language-features/server/dist/node/jsonServerMain.js",
     "--stdio",
   },
 })

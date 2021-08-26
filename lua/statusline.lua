@@ -1,11 +1,11 @@
 local function get_lsp()
   local clients = vim.lsp.buf_get_clients()
-  local lsp_string = "LSP: "
+  local lsp_string = ""
   if next(clients) ~= nil then
     for _, client in ipairs(clients) do
-      lsp_string = lsp_string .. client.name .. " "
+      lsp_string = " " .. lsp_string .. client.name
     end
-    return lsp_string
+    return "LSP: " .. lsp_string
   else
     return ""
   end
@@ -33,7 +33,20 @@ require("lualine").setup({
         color_removed = "#FA7686",
       },
     },
-    lualine_c = { "filename", get_lsp },
+    lualine_c = {
+      {
+        "filename",
+        path = 1,
+      },
+      {
+        get_lsp,
+        color = "lualine_b_normal",
+      },
+      {
+        require("nvim-treesitter").statusline,
+        icon = " ﬦ ",
+      }
+    },
     lualine_x = {
       {
         "diagnostics",
@@ -44,6 +57,7 @@ require("lualine").setup({
           info = "  ",
           hint = "  ",
         },
+        separator = " ❚ ",
         color_error = "#DF6262",
         color_warn = "#AABA20",
         color_info = "#DDAAAA",
