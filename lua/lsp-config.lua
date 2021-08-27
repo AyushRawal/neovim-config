@@ -1,100 +1,146 @@
 local nvim_lsp = require("lspconfig")
 local data_path = vim.fn.stdpath("data")
 
--- Use an on_attach function to only map the following keys
--- after the language server attaches to the current buffer
-local on_attach_no_format = function(client, bufnr)
-	local function buf_set_keymap(...)
-		vim.api.nvim_buf_set_keymap(bufnr, ...)
-	end
-	local function buf_set_option(...)
-		vim.api.nvim_buf_set_option(bufnr, ...)
-	end
-
-	-- Mappings.
-	local opts = { noremap = true, silent = true }
-
-	buf_set_keymap("n", "gD", "<Cmd>lua vim.lsp.buf.declaration()<CR>", opts)
-	buf_set_keymap("n", "gd", "<Cmd>lua vim.lsp.buf.definition()<CR>", opts)
-	buf_set_keymap("n", "<leader>k", "<Cmd>lua vim.lsp.buf.hover()<CR>", opts)
-	buf_set_keymap("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>", opts)
-	buf_set_keymap("n", "<leader>K", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts)
-	buf_set_keymap("n", "<leader>wa", "<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>", opts)
-	buf_set_keymap("n", "<leader>wr", "<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>", opts)
-	buf_set_keymap("n", "<leader>wl", "<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>", opts)
-	buf_set_keymap("n", "<leader>D", "<cmd>lua vim.lsp.buf.type_definition()<CR>", opts)
-	buf_set_keymap("n", "<leader>rn", "<cmd>lua vim.lsp.buf.rename()<CR>", opts)
-	buf_set_keymap("n", "<leader>ca", "<cmd>lua vim.lsp.buf.code_action()<CR>", opts)
-	buf_set_keymap("n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>", opts)
-	buf_set_keymap("n", "<leader>e", "<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>", opts)
-	buf_set_keymap("n", "<M-[>", "<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>", opts)
-	buf_set_keymap("n", "<M-]>", "<cmd>lua vim.lsp.diagnostic.goto_next()<CR>", opts)
-	buf_set_keymap("n", "<leader>q", "<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>", opts)
-end
+vim.fn.sign_define(
+  "LspDiagnosticsSignError",
+  { text = "", texthl = "LspDiagnosticsSignError", numhl = "LspDiagnosticsSignError" }
+)
+vim.fn.sign_define(
+  "LspDiagnosticsSignWarning",
+  { text = "", texthl = "LspDiagnosticsSignWarning", numhl = "LspDiagnosticsSignWarning" }
+)
+vim.fn.sign_define(
+  "LspDiagnosticsSignInformation",
+  { text = "", texthl = "LspDiagnosticsSignInformation", numhl = "LspDiagnosticsSignInformation" }
+)
+vim.fn.sign_define(
+  "LspDiagnosticsSignHint",
+  { text = "", texthl = "LspDiagnosticsSignHint", numhl = "LspDiagnosticsSignHint" }
+)
 
 local on_attach = function(client, bufnr)
-	on_attach_no_format(client, bufnr)
-	vim.api.nvim_command("autocmd BufWritePre * lua vim.lsp.buf.formatting_sync(nil, 100)")
-	vim.api.nvim_command("command! -buffer Fmt lua vim.lsp.buf.formatting()")
+  local function buf_set_keymap(...)
+    vim.api.nvim_buf_set_keymap(bufnr, ...)
+  end
+  local function buf_set_option(...)
+    vim.api.nvim_buf_set_option(bufnr, ...)
+  end
+
+  -- Mappings.
+  local opts = { noremap = true, silent = true }
+
+  buf_set_keymap("n", "gD", "<Cmd>lua vim.lsp.buf.declaration()<CR>", opts)
+  buf_set_keymap("n", "gd", "<Cmd>lua vim.lsp.buf.definition()<CR>", opts)
+  buf_set_keymap("n", "K", "<Cmd>lua vim.lsp.buf.hover()<CR>", opts)
+  buf_set_keymap("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>", opts)
+  buf_set_keymap("n", "<leader>k", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts)
+  buf_set_keymap("n", "<leader>lwa", "<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>", opts)
+  buf_set_keymap("n", "<leader>lwr", "<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>", opts)
+  buf_set_keymap("n", "<leader>lwl", "<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>", opts)
+  buf_set_keymap("n", "gt", "<cmd>lua vim.lsp.buf.type_definition()<CR>", opts)
+  buf_set_keymap("n", "<leader>lr", "<cmd>lua vim.lsp.buf.rename()<CR>", opts)
+  buf_set_keymap("n", "<leader>la", "<cmd>lua vim.lsp.buf.code_action()<CR>", opts)
+  buf_set_keymap("n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>", opts)
+  buf_set_keymap("n", "<leader>ld", "<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>", opts)
+  buf_set_keymap("n", "<M-[>", "<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>", opts)
+  buf_set_keymap("n", "<M-]>", "<cmd>lua vim.lsp.diagnostic.goto_next()<CR>", opts)
+  buf_set_keymap("n", "<leader>lq", "<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>", opts)
+  buf_set_keymap("n", "<leader>lf", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
+  buf_set_keymap("v", "<leader>lf", "<cmd>lua vim.lsp.buf.range_formatting()<CR>", opts)
+
+  vim.api.nvim_command([[autocmd CursorHold  <buffer> lua vim.lsp.buf.document_highlight()]])
+  vim.api.nvim_command([[autocmd CursorHoldI <buffer> lua vim.lsp.buf.document_highlight()]])
+  vim.api.nvim_command([[autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()]])
+
+  -- auto format on save
+  vim.api.nvim_command("autocmd BufWritePre * lua vim.lsp.buf.formatting_sync(nil, 100)")
 end
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities.textDocument.completion.completionItem.snippetSupport = true
 
 nvim_lsp.clangd.setup({
-	on_attach = on_attach,
-	capabilities = capabilities,
-	cmd = {
-		data_path .. "/lspinstall/cpp/clangd/bin/clangd",
-		"--background-index",
-		"--fallback-style=Microsoft",
-	},
+  on_attach = on_attach,
+  capabilities = capabilities,
+  cmd = {
+    data_path .. "/lspinstall/cpp/clangd/bin/clangd",
+    "--background-index",
+    "--fallback-style=Microsoft",
+  },
 })
 
 nvim_lsp.pyright.setup({
-	on_attach = on_attach,
-	capabilities = capabilities,
-	cmd = {
-		data_path .. "/lspinstall/python/node_modules/.bin/pyright-langserver",
-		"--stdio",
-	},
-	settings = { python = { analysis = { typeCheckingMode = "off" } } },
+  on_attach = on_attach,
+  capabilities = capabilities,
+  cmd = {
+    data_path .. "/lspinstall/python/node_modules/.bin/pyright-langserver",
+    "--stdio",
+  },
+  settings = { python = { analysis = { typeCheckingMode = "off" } } },
+})
+
+nvim_lsp.efm.setup({
+  on_attach = on_attach,
+  capabilities = capabilities,
+  init_options = {
+    documentFormatting = true,
+  },
+  filetypes = { "html", "css", "lua", "scss", "less" },
+  cmd = {
+    data_path .. "/lspinstall/efm/efm-langserver",
+  },
+  settings = {
+    languages = {
+      lua = {
+        { formatCommand = "stylua --indent-type Spaces --indent-width 2 - ", formatStdin = true },
+      },
+      html = {
+        { formatCommand = "prettierd '${INPUT}'", formatStdin = true },
+      },
+      css = {
+        { formatCommand = "prettierd '${INPUT}'", formatStdin = true },
+      },
+    },
+  },
 })
 
 nvim_lsp.html.setup({
-	on_attach = on_attach_no_format,
-	capabilities = capabilities,
-	cmd = {
-		"node",
-		data_path .. "/lspinstall/html/vscode-html/html-language-features/server/dist/node/htmlServerMain.js",
-		"--stdio",
-	},
+  on_attach = on_attach,
+  capabilities = capabilities,
+  cmd = {
+    "node",
+    data_path .. "/lspinstall/html/vscode-html/html-language-features/server/dist/node/htmlServerMain.js",
+    "--stdio",
+  },
 })
 nvim_lsp.cssls.setup({
-	on_attach = on_attach_no_format,
-	capabilities = capabilities,
-	cmd = {
-		"node",
-		data_path .. "/lspinstall/css/vscode-css/css-language-features/server/dist/node/cssServerMain.js",
-		"--stdio",
-	},
+  on_attach = on_attach,
+  capabilities = capabilities,
+  cmd = {
+    "node",
+    data_path .. "/lspinstall/css/vscode-css/css-language-features/server/dist/node/cssServerMain.js",
+    "--stdio",
+  },
 })
 nvim_lsp.jsonls.setup({
-	on_attach = on_attach,
-	capabilities = capabilities,
-	cmd = {
-		"node",
-		data_path .. "/lspinstall/json/vscode-json/json-language-features/server/dist/node/jsonServerMain.js",
-		"--stdio",
-	},
+  on_attach = on_attach,
+  capabilities = capabilities,
+  cmd = {
+    "node",
+    data_path .. "/lspinstall/json/vscode-json/json-language-features/server/dist/node/jsonServerMain.js",
+    "--stdio",
+  },
 })
 nvim_lsp.tsserver.setup({
-	on_attach = on_attach,
-	capabilities = capabilities,
-	cmd = {
-		data_path .. "/lspinstall/typescript/node_modules/.bin/typescript-language-server",
-		"--stdio",
-	},
+  on_attach = on_attach,
+  capabilities = capabilities,
+  init_options = {
+    hostInfo = "neovim",
+  },
+  cmd = {
+    data_path .. "/lspinstall/typescript/node_modules/.bin/typescript-language-server",
+    "--stdio",
+  },
 })
 
 local runtime_path = vim.split(package.path, ";")
@@ -102,26 +148,26 @@ table.insert(runtime_path, "lua/?.lua")
 table.insert(runtime_path, "lua/?/init.lua")
 
 require("lspconfig").sumneko_lua.setup({
-	cmd = {
-		data_path .. "/lspinstall/lua/sumneko-lua-language-server",
-		"-E",
-		data_path .. "/lspinstall/lua/main.lua",
-	},
-	settings = {
-		Lua = {
-			runtime = {
-				version = "LuaJIT",
-				path = runtime_path,
-			},
-			diagnostics = {
-				globals = { "vim" },
-			},
-			workspace = {
-				library = vim.api.nvim_get_runtime_file("", true),
-			},
-			telemetry = {
-				enable = false,
-			},
-		},
-	},
+  cmd = {
+    data_path .. "/lspinstall/lua/sumneko-lua-language-server",
+    "-E",
+    data_path .. "/lspinstall/lua/main.lua",
+  },
+  settings = {
+    Lua = {
+      runtime = {
+        version = "LuaJIT",
+        path = runtime_path,
+      },
+      diagnostics = {
+        globals = { "vim" },
+      },
+      workspace = {
+        library = vim.api.nvim_get_runtime_file("", true),
+      },
+      telemetry = {
+        enable = false,
+      },
+    },
+  },
 })

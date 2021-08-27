@@ -1,6 +1,6 @@
 syntax enable
+set updatetime=500
 set number 
-set relativenumber
 set noswapfile
 set encoding=utf-8
 set hidden
@@ -37,7 +37,7 @@ let mapleader= ";"
 " PLugins
 call plug#begin("/home/rawal/.config/nvim/plugged")
 Plug 'terrortylor/nvim-comment', {'branch' : 'main'}
-Plug 'breuckelen/vim-resize'
+Plug 'breuckelen/vim-resize', {'on': ['CmdResizeUp', 'CmdResizeDown', 'CmdResizeLeft', 'CmdResizeRight']}
 Plug 'JoosepAlviste/nvim-ts-context-commentstring'
 Plug 'jiangmiao/auto-pairs'
 Plug 'kyazdani42/nvim-web-devicons'
@@ -73,17 +73,22 @@ require("others")
 require("statusline")
 EOF
 
+" visual movement
+nnoremap j gj
+nnoremap k gk
+nnoremap <up> gk
+nnoremap <down> gj
+
 " fast movement
 nnoremap <S-up> 10k
 nnoremap <S-down> 10j
-nnoremap J 10j
-nnoremap K 10k
-
-" join lines
-nnoremap M mzJ`z
+nnoremap <S-left> 10h
+nnoremap <S-right> 10l
 
 " toggle relative numbers
 nnoremap <silent><F12> :set rnu!<CR>
+" toggle wrap
+nnoremap <silent><F10> :setlocal wrap!<CR>
 
 " move among splits
 inoremap <C-h> <C-\><C-N><C-w>h 
@@ -121,7 +126,15 @@ vnoremap > >gv
 nnoremap Y y$
 nnoremap <leader>y :%y<CR>
 
-" cycle quickfix list
+" quickfix list
+function! ToggleQuickFix()
+    if empty(filter(getwininfo(), 'v:val.quickfix'))
+        copen
+    else
+        cclose
+    endif
+endfunction
+nnoremap <C-q> :call ToggleQuickFix()<CR>
 nnoremap <A-.> :cnext<CR>
 nnoremap <A-,> :cprev<CR>
 
@@ -130,6 +143,8 @@ nnoremap 0 ^
 nnoremap ^ 0
 
 " save me
+nnoremap <leader>q :q<CR>
+nnoremap <leader>w :w<CR>
 command! W :w
 command! Wq :wq
 command! Q :q
@@ -140,7 +155,7 @@ nnoremap <leader>rc :e /home/rawal/.config/nvim/init.vim<CR>
 nnoremap <leader><CR> :source /home/rawal/.config/nvim/init.vim<CR>
 
 " clear highlights 
-nnoremap <leader>l :noh<CR>
+nnoremap <leader>c :noh<CR>
 
 " resize splits
 nnoremap <silent> <A-H> :CmdResizeLeft<cr>
@@ -168,11 +183,11 @@ let g:fzf_colors = {
     \ 'spinner': ['fg', 'Label'],
     \ 'header':  ['fg', 'Comment'] }
 let $FZF_DEFAULT_COMMAND = 'rg --hidden --files --follow -g "!\.git/"'
-nnoremap <leader>f :Files<CR>
+nnoremap <leader>ff :Files<CR>
 " Get text in files with Rg
 command! -bang -nargs=* Rg call fzf#vim#grep('rg --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1, {'options': '--delimiter : --nth 4..'}, <bang>0)
-nnoremap <leader>F :Rg<CR>
-nnoremap <C-f> :BLines<Cr>
+nnoremap <leader>fa :Rg<CR>
+nnoremap <leader>fb :BLines<Cr>
 nnoremap <leader>h :History<CR>
 nnoremap <leader>gc :Commits<CR>
 nnoremap <leader>gs :GFiles?<CR>
