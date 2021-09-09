@@ -18,7 +18,6 @@ set smartindent
 set smarttab
 set tabstop=4
 set shiftwidth=4
-set expandtab
 set mouse=a
 set splitbelow splitright
 set scrolloff=999

@@ -1,3 +1,4 @@
+setlocal expandtab
 let b:AutoPairs = AutoPairsDefine({'\w\zs<': '>'})
 
 " competitive programming mappings
