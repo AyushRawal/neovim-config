@@ -16,8 +16,9 @@ set nowrap
 set autoindent
 set smartindent
 set smarttab
-set tabstop=4
-set shiftwidth=4
+set tabstop=2
+set shiftwidth=2
+set expandtab
 set mouse=a
 set splitbelow splitright
 set scrolloff=999
@@ -135,4 +136,3 @@ tnoremap <Esc> <C-\><C-n>
 " start terminal in insert mode and enable wrap
 autocmd TermOpen * startinsert
 autocmd TermOpen * setlocal wrap 
-

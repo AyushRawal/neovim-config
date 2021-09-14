@@ -1,6 +1,6 @@
 vim.g.bufferline = {
-	animation = false,
-	icon_close_tab = "",
+  animation = false,
+  icon_close_tab = "",
 }
 
 vim.api.nvim_set_keymap("n", "<A-b>", ":BufferNext<CR>", { silent = true })

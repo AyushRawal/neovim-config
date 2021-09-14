@@ -19,11 +19,11 @@ vim.g.fzf_colors = {
   header = { "fg", "Comment" },
 }
 vim.api.nvim_exec(
-[[
+  [[
 let $FZF_DEFAULT_COMMAND = 'rg --hidden --files --follow -g "!\.git/"'
 command! -bang -nargs=* Rg :call fzf#vim#grep('rg --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1, {'options': '--delimiter : --nth 4..'}, <bang>0)
 ]],
-false
+  false
 )
 
 local opts = { noremap = true, silent = true }
