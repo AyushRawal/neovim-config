@@ -38,4 +38,6 @@ vim.g.nvim_tree_bindings = {
   { key = "g?", cb = tree_cb("toggle_help") },
 }
 
+require "nvim-tree".setup()
+
 vim.api.nvim_set_keymap("n", "<leader>n", ":NvimTreeToggle<CR>", { silent = true })
